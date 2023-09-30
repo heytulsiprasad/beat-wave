@@ -14,7 +14,8 @@ export default function Home() {
   const [currentTab, setCurrentTab] = useState("for-you"); // or top-tracks
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [query, setQuery] = useState("") // search
+  const [query, setQuery] = useState(""); // search
+  const [selectedSong, setSelectedSong] = useState({});
 
   const navigateToTab = (tab) => {
     setCurrentTab(tab);
@@ -26,10 +27,12 @@ export default function Home() {
     const data = await fetch("https://cms.samespace.com/items/songs");
     const results = await data.json();
 
-    console.log({ results: results.data });
+    // const allSongsData = [...results.data];
+
+    // console.log({ allSongsData });
     setSongs(results.data);
     setLoading(false);
-  }, [])
+  }, []);
 
   // Fetch all songs upon component mount
   useEffect(() => {
@@ -37,14 +40,18 @@ export default function Home() {
   }, [getAllMusic]);
 
   useEffect(() => {
-    console.log({ query })
-      setSongs((songs) => songs.filter((song) => song.name.toLowerCase().includes(query.toLowerCase())))
+    console.log({ query });
+    setSongs((songs) =>
+      songs.filter((song) =>
+        song.name.toLowerCase().includes(query.toLowerCase())
+      )
+    );
 
-      // if query is empty bring to previous state
-      if (query === "") {
-        getAllMusic()
-      }
-  }, [query, getAllMusic])
+    // if query is empty bring to previous state
+    if (query === "") {
+      getAllMusic();
+    }
+  }, [query, getAllMusic]);
 
   return (
     <main
@@ -114,13 +121,12 @@ export default function Home() {
               </div>
             ) : (
               <>
-                {songs.map((item) => (
+                {songs.map((song) => (
                   <MusicItem
-                    key={item.id}
-                    name={item.name}
-                    artist={item.artist}
-                    coverId={item.cover}
-                    trackUrl={item.url}
+                    key={song.id}
+                    song={song}
+                    selectedSong={selectedSong}
+                    setSelectedSong={setSelectedSong}
                   />
                 ))}
               </>
