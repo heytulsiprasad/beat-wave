@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useCallback } from "react";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import logo from "../../public/assets/logo.svg";
@@ -13,33 +14,44 @@ export default function Home() {
   const [currentTab, setCurrentTab] = useState("for-you"); // or top-tracks
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState("") // search
 
   const navigateToTab = (tab) => {
     setCurrentTab(tab);
   };
 
+  const getAllMusic = useCallback(async () => {
+    setLoading(true);
+
+    const data = await fetch("https://cms.samespace.com/items/songs");
+    const results = await data.json();
+
+    console.log({ results: results.data });
+    setSongs(results.data);
+    setLoading(false);
+  }, [])
+
   // Fetch all songs upon component mount
   useEffect(() => {
-    async function getAllMusic() {
-      setLoading(true);
-
-      const data = await fetch("https://cms.samespace.com/items/songs");
-      const results = await data.json();
-
-      console.log({ results: results.data });
-      setSongs(results.data);
-      setLoading(false);
-    }
-
     getAllMusic();
-  }, []);
+  }, [getAllMusic]);
+
+  useEffect(() => {
+    console.log({ query })
+      setSongs((songs) => songs.filter((song) => song.name.toLowerCase().includes(query.toLowerCase())))
+
+      // if query is empty bring to previous state
+      if (query === "") {
+        getAllMusic()
+      }
+  }, [query, getAllMusic])
 
   return (
     <main
       className={`${inter.className} min-h-screen min-w-screen text-white p-8 flex flex-row`}
     >
       {/* Songs list */}
-      <div className="flex gap-16 basis-1/2">
+      <div className="flex gap-8 basis-1/2">
         <div className="flex flex-col justify-between">
           <div>
             <Image src={logo} alt="App logo" />
@@ -85,6 +97,8 @@ export default function Home() {
                 backgroundColor: "rgba(255, 255, 255, 0.08)",
                 width: "400px",
               }}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
             />
           </div>
           <div>

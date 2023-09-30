@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import profile from "../../public/assets/profile.svg";
 import Image from "next/image";
 
 const MusicItem = ({ name, artist, coverId, trackUrl }) => {
@@ -20,17 +19,16 @@ const MusicItem = ({ name, artist, coverId, trackUrl }) => {
 
   return (
     <div className="flex flex-row p-4 w-full rounded-lg justify-between items-center hover:cursor-pointer hover:bg-glass">
-      <div className="flex flex-row gap-8">
+      <div className="flex flex-row gap-4 justify-center items-center">
         <div
-          style={{ borderRadius: "50%" }}
-          className="overflow-hidden w-12 h-12"
+          className="w-12 h-12 overflow-hidden relative rounded-full"
         >
           <Image
             src={coverImg}
-            objectFit="cover"
-            width={48}
-            height={48}
+            fill={true}
+            className="max-h-full max-w-full"
             alt="Music Cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
         <div className="flex flex-col justify-start">
