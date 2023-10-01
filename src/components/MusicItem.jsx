@@ -3,30 +3,6 @@ import Image from "next/image";
 
 const MusicItem = ({ song, selectedSong, setSelectedSong }) => {
   const { name, artist, cover, duration } = song;
-  const [songDuration, setSongDuration] = useState(0);
-
-  useEffect(() => {
-    let url = song.url;
-
-    // Urls sometimes contain whitespaces, which causes an error
-    if (url.includes(" ")) {
-      url = url.replace(" ", "");
-    }
-
-    const audio = new Audio(song.url);
-    audio.addEventListener("loadedmetadata", () => {
-      const timeLength = {
-        minutes: Math.floor(audio.duration / 60) || "0",
-        seconds: Math.floor(audio.duration % 60) || "00",
-      };
-
-      console.log({ timeLength });
-
-      setSongDuration(`${timeLength.minutes}:${timeLength.seconds}`);
-    });
-  }, [song.url]);
-
-  console.log({ songDuration });
 
   return (
     <div
@@ -53,7 +29,7 @@ const MusicItem = ({ song, selectedSong, setSelectedSong }) => {
         </div>
       </div>
       <div>
-        <h6 className="opacity-60">{songDuration}</h6>
+        <h6 className="opacity-60">{duration || "0:00"}</h6>
       </div>
     </div>
   );

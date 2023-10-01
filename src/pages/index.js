@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useCallback } from "react";
 import { Inter } from "next/font/google";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import logo from "../../public/assets/logo.svg";
 import profile from "../../public/assets/profile.svg";
 import IconSearch from "../../public/assets/search.svg";
@@ -10,48 +10,75 @@ import MusicItem from "@/components/MusicItem";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export default function Home({ allSongs }) {
   const [currentTab, setCurrentTab] = useState("for-you"); // or top-tracks
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState(""); // search
   const [selectedSong, setSelectedSong] = useState({});
+  const songsWithDurationRef = useRef(null);
 
+  // Navigate to tab
   const navigateToTab = (tab) => {
     setCurrentTab(tab);
   };
 
-  const getAllMusic = useCallback(async () => {
+  // Store initial props in state
+  useEffect(() => {
     setLoading(true);
 
-    const data = await fetch("https://cms.samespace.com/items/songs");
-    const results = await data.json();
+    const durations = [];
+    let newAllSongs = [...allSongs];
 
-    // const allSongsData = [...results.data];
+    // Read duration from API
+    newAllSongs.forEach((song) => {
+      let url = song.url;
+      // Urls sometimes contain whitespaces, which causes an error
+      if (url.includes(" ")) {
+        url = url.replace(" ", "");
+      }
 
-    // console.log({ allSongsData });
-    setSongs(results.data);
+      try {
+        const audio = new Audio(url);
+        audio.addEventListener("loadedmetadata", () => {
+          const duration = audio.duration;
+          const timeLength = {
+            minutes: Math.floor(audio.duration / 60),
+            seconds: Math.floor(audio.duration % 60),
+          };
+
+          song.duration = `${timeLength.minutes}:${timeLength.seconds}`;
+          durations.push(`${timeLength.minutes}:${timeLength.seconds}`);
+        });
+      } catch (e) {
+        song.duration = "0:00";
+        console.log({ e });
+      }
+    });
+
+    // Store allnewsongs in ref
+    songsWithDurationRef.current = newAllSongs;
+
+    console.log({ durations, newAllSongs });
+    setSongs([...newAllSongs]);
     setLoading(false);
-  }, []);
+  }, [allSongs]);
 
-  // Fetch all songs upon component mount
-  useEffect(() => {
-    getAllMusic();
-  }, [getAllMusic]);
+  console.log(songsWithDurationRef.current);
 
+  // Filter songs based on search query
   useEffect(() => {
     console.log({ query });
-    setSongs((songs) =>
-      songs.filter((song) =>
-        song.name.toLowerCase().includes(query.toLowerCase())
-      )
-    );
-
-    // if query is empty bring to previous state
-    if (query === "") {
-      getAllMusic();
+    if (query !== "") {
+      setSongs((songs) =>
+        songs.filter((song) =>
+          song.name.toLowerCase().includes(query.toLowerCase())
+        )
+      );
+    } else {
+      setSongs(songsWithDurationRef.current);
     }
-  }, [query, getAllMusic]);
+  }, [query]);
 
   return (
     <main
@@ -138,4 +165,12 @@ export default function Home() {
       <div className="flex basis-1/2"></div>
     </main>
   );
+}
+
+export async function getStaticProps() {
+  const res = await fetch("https://cms.samespace.com/items/songs");
+  const songs = await res.json();
+  console.log({ songs });
+
+  return { props: { allSongs: songs.data } };
 }
