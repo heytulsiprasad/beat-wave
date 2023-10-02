@@ -7,8 +7,10 @@ html {
 }
 
 body {
-  /* background: linear-gradient(#201606, #000000); */
-  background: linear-gradient(to right, #201606, #000000);
+  --accent-background: #201606;
+  background: linear-gradient(to right, var(--accent-background), #000000);
+  transition: background 0.5s ease-in-out;
+  -webkit-transition: background 2s; /* For Safari */
   color: #fff;
 }
 

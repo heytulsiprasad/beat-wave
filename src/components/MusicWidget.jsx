@@ -9,6 +9,19 @@ import {
   IconPlayerTrackPrevFilled,
   IconVolume3,
 } from "@tabler/icons-react";
+import { toast } from "react-toastify";
+
+function isValidHttpUrl(string) {
+  let url;
+
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}
 
 const MusicWidget = ({ song }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -17,12 +30,27 @@ const MusicWidget = ({ song }) => {
   const playAnimationRef = useRef();
   const [muteVolume, setMuteVolume] = useState(false);
 
-  console.log({ song });
-
-  // Update isPlaying when song is changed
   useEffect(() => {
+    // Update isPlaying when song is changed
     setIsPlaying(false);
-  }, [song.url]);
+
+    // Update accent color when selected color is changed
+    document.body.style.setProperty("--accent-background", song.accent);
+
+    // When audio url is invalid
+    if (!isValidHttpUrl(song.url)) {
+      toast.error("The song URL is invalid!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  }, [song]);
 
   const repeatAnimation = useCallback(() => {
     const currentTime = audioRef.current?.currentTime;
@@ -47,8 +75,6 @@ const MusicWidget = ({ song }) => {
   const toggleMuteVolume = () => {
     setMuteVolume((prev) => !prev);
   };
-
-  console.log(audioRef);
 
   useEffect(() => {
     if (isPlaying) {

@@ -57,6 +57,7 @@ export default function Home({ allSongs }) {
           durations.push(`${timeLength.minutes}:${timeLength.seconds}`);
         });
       } catch (e) {
+        console.log("ERRORORORORORORR", song);
         song.duration = "0:00";
         console.log({ e });
       }
