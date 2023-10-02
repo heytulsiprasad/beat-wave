@@ -23,7 +23,7 @@ function isValidHttpUrl(string) {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
-const MusicWidget = ({ song }) => {
+const MusicWidget = ({ song, handleNextSong, handlePrevSong }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef();
   const progressRef = useRef();
@@ -68,7 +68,6 @@ const MusicWidget = ({ song }) => {
   };
 
   const handleProgressUpdate = () => {
-    console.log(progressRef.current.value);
     audioRef.current.currentTime = progressRef.current.value;
   };
 
@@ -128,7 +127,10 @@ const MusicWidget = ({ song }) => {
             <IconDots size={24} />
           </button>
           <div className="flex flex-row gap-8">
-            <button className="flex flex-row justify-center items-center opacity-60">
+            <button
+              onClick={handlePrevSong}
+              className="flex flex-row justify-center items-center opacity-60"
+            >
               <IconPlayerTrackPrevFilled size={20} />
             </button>
             <button
@@ -142,7 +144,10 @@ const MusicWidget = ({ song }) => {
                 <IconPlayerPlayFilled style={{ color: "#000" }} size={24} />
               )}
             </button>
-            <button className="flex flex-row justify-center items-center opacity-60">
+            <button
+              onClick={handleNextSong}
+              className="flex flex-row justify-center items-center opacity-60"
+            >
               <IconPlayerTrackNextFilled size={20} />
             </button>
           </div>

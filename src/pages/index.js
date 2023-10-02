@@ -24,6 +24,28 @@ export default function Home({ allSongs }) {
   const [selectedSong, setSelectedSong] = useState({});
   const songsWithDurationRef = useRef(null);
 
+  const handleNextSong = () => {
+    const currentIndex = songs.findIndex((song) => song.id === selectedSong.id);
+    let nextSong = songs[currentIndex + 1];
+
+    if (currentIndex === songs.length - 1) {
+      nextSong = songs[0];
+    }
+
+    setSelectedSong(nextSong);
+  };
+
+  const handlePrevSong = () => {
+    const currentIndex = songs.findIndex((song) => song.id === selectedSong.id);
+    let prevSong = songs[currentIndex - 1];
+
+    if (currentIndex === 0) {
+      prevSong = songs[songs.length - 1];
+    }
+
+    setSelectedSong(prevSong);
+  };
+
   // Navigate to tab
   const navigateToTab = (tab) => {
     setCurrentTab(tab);
@@ -89,7 +111,7 @@ export default function Home({ allSongs }) {
 
   return (
     <main
-      className={`${inter.className} max-h-screen min-w-screen text-white p-8 flex flex-row`}
+      className={`${inter.className} min-h-screen min-w-screen text-white p-8 flex flex-row`}
     >
       {/* Songs list */}
       <div className="flex gap-8 basis-1/2">
@@ -170,7 +192,13 @@ export default function Home({ allSongs }) {
       </div>
       {/* Player */}
       <div className="flex basis-1/2 flex-row justify-center items-center max-h-screen">
-        {!isEmpty(selectedSong) && <MusicWidget song={selectedSong} />}
+        {!isEmpty(selectedSong) && (
+          <MusicWidget
+            song={selectedSong}
+            handlePrevSong={handlePrevSong}
+            handleNextSong={handleNextSong}
+          />
+        )}
       </div>
     </main>
   );
