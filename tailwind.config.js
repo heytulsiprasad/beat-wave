@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     colors: {
       glass: "rgba(255, 255, 255, 0.08)",
+      layer: "rgba(255, 255, 255, 0.10);",
     },
     extend: {
       fontFamily: {

@@ -11,3 +11,12 @@ body {
   background: linear-gradient(to right, #201606, #000000);
   color: #fff;
 }
+
+.no-scroll {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scroll::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}

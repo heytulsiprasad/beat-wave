@@ -7,8 +7,14 @@ import profile from "../../public/assets/profile.svg";
 import IconSearch from "../../public/assets/search.svg";
 import { Bars } from "react-loader-spinner";
 import MusicItem from "@/components/MusicItem";
+import MusicWidget from "@/components/MusicWidget";
 
 const inter = Inter({ subsets: ["latin"] });
+
+// Is empty utils
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
 
 export default function Home({ allSongs }) {
   const [currentTab, setCurrentTab] = useState("for-you"); // or top-tracks
@@ -59,12 +65,12 @@ export default function Home({ allSongs }) {
     // Store allnewsongs in ref
     songsWithDurationRef.current = newAllSongs;
 
-    console.log({ durations, newAllSongs });
+    // console.log({ durations, newAllSongs });
     setSongs([...newAllSongs]);
     setLoading(false);
   }, [allSongs]);
 
-  console.log(songsWithDurationRef.current);
+  // console.log(songsWithDurationRef.current);
 
   // Filter songs based on search query
   useEffect(() => {
@@ -82,7 +88,7 @@ export default function Home({ allSongs }) {
 
   return (
     <main
-      className={`${inter.className} min-h-screen min-w-screen text-white p-8 flex flex-row`}
+      className={`${inter.className} max-h-screen min-w-screen text-white p-8 flex flex-row`}
     >
       {/* Songs list */}
       <div className="flex gap-8 basis-1/2">
@@ -135,7 +141,7 @@ export default function Home({ allSongs }) {
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
-          <div>
+          <div className="overflow-auto no-scroll">
             {loading ? (
               <div className="mt-12 flex flex-row justify-center items-center">
                 <Bars
@@ -162,7 +168,9 @@ export default function Home({ allSongs }) {
         </div>
       </div>
       {/* Player */}
-      <div className="flex basis-1/2"></div>
+      <div className="flex basis-1/2 flex-row justify-center items-center max-h-screen">
+        {!isEmpty(selectedSong) && <MusicWidget song={selectedSong} />}
+      </div>
     </main>
   );
 }
